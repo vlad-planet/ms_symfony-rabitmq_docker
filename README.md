@@ -2,7 +2,7 @@ microservices
 
 ## Symfony:  Очереди сообщений AMQP с использованием RabbitMQ
 
-Stack used: Symfony 6.1, PHP 8.1, RabbitMQ 3
+Stack used: Symfony 6.1, PHP 8.1, RabbitMQ 3.
 
 ### Установка
 
