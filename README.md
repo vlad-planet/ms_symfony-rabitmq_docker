@@ -21,7 +21,7 @@ docker exec -it app2 php bin/console app:send
 
 Выходные данные
 ```shell
-docker exec -it app2 php bin/console messenger:consume -vv async
+docker exec -it app1 php bin/console messenger:consume -vv external_messages
 ```
 
 В качестве выходных данных вы должны увидеть сообщения.
