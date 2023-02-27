@@ -1,35 +1,72 @@
-microservices
-
-## Symfony:  Очереди сообщений AMQP с использованием RabbitMQ
-Два микросервиса: 
-APP2 сервер отправки сообщений; 
-APP1 прослушка.
-
-Stack used: Symfony 6.1, PHP 8.1, RabbitMQ 3.
-
-### Установка
-
+# spa-comments-system
+ example
+ 
+### Установка и запуск приложения:
+ 
+ Выполните клонирование проекта в выбранную директорию:
+ 
 ```shell
-git clone https://github.com/vlad-planet/ms_symfony-rabitmq_docker
-cd ms_symfony-rabitmq_docker/
-docker-compose up --build -d
+ git clone https://github.com/vlad-planet/spa-comments-system
+```
+ 
+ Перейдите в корневой каталог приложения с помощью терминала и запустите команду:
+ 
+ docker-compose up -d
+ 
+ вкорневом каталоге переименуйте файл .env.example в .env
+ 
+ Найдите файл 'hosts' в Вашей ОС, в Windows он обычно расположен в директории:
+ 
+```shell
+ C:\Windows\system32\drivers\etc\
 ```
 
-### Запуск тэста
-
-Запустить сервер 
+ и отредактируйте его от имени администратора, 
+ добавив следующую строку в ваш файл 'hosts' и сохраните его:
+ 
 ```shell
-docker exec -it app2 php bin/console app:send
+ 127.0.0.1 comments.spa phpmyadmin.spa
 ```
 
-Выходные данные
+ После чего перейдите в http://phpmyadmin.spa и зайдите под пользователем и паролем 
+ 
+ user: root password: root
+
+ Найдите БД demo и создайте в ней таблицу comments  с помощью SQL команды,
+ которую нужно запустить в терминале ввода SQL в phpmyadmin
+ 
 ```shell
-docker exec -it app1 php bin/console messenger:consume -vv external_messages
+ CREATE TABLE `comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `title`  varchar(255) NOT NULL,
+  `text` varchar(255) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
-В качестве выходных данных вы должны увидеть сообщения.
+ После чего перейдите на сайт  http://comments.spa
+ и оставьте комментарий:
+ 
+ Правила ограничений на ввод можно настоить по усмотрению в соотвествующей Модели таблицы БД,
+ которые обычно располагаются в каталоге \src\models
+	
+ Пример:
+ 
 ```shell
-[warning] APP2: {STATUS_UPDATE} - Worker X assigned to Y
-[info] Message App\Message\StatusUpdate handled by App\Handler\StatusUpdateHandler::__invoke
-[info] App\Message\StatusUpdate was handled successfully (acknowledging to transport).
+ $fields = [
+    'firstname' => 'required, max:255',
+    'lastname' => 'required, max: 255',
+    'address' => 'required | min: 10, max:255',
+    'zipcode' => 'between: 5,6',
+    'username' => 'required | alphanumeric | between: 3,255 | unique: users,username',
+    'email' => 'required | email | unique: users,email',
+    'password' => 'required | secure',
+    'password2' => 'required | same:password'
+ ];
 ```
+
+ При необходимости, чтобы изменить настройки подключения к бд, перейдите в
+ \src\config\db.php
